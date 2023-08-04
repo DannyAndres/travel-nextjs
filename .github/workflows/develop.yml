@@ -1,9 +1,7 @@
 name: CI
 on:
-  push:
-    branches: [develop]
   pull_request:
-    branches: [develop]
+    branches: [main]
   workflow_dispatch:
 jobs:
   build:
@@ -24,4 +22,4 @@ jobs:
       - name: Start Amplify Deployment
         if: success() # This step will only run if all previous steps were successful
         run: |
-          aws amplify start-job --app-id ${{ secrets.AWS_AMPLIFY_ID }} --branch-name develop --job-type RELEASE
+          aws amplify start-job --app-id ${{ secrets.AWS_AMPLIFY_ID }} --branch-name main --job-type RELEASE
