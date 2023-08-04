@@ -24,4 +24,4 @@ jobs:
       - name: Start Amplify Deployment
         if: success() # This step will only run if all previous steps were successful
         run: |
-          aws amplify start-deployment --app-id ${{ secrets.AWS_AMPLIFY_ID }} --branch-name develop
+          aws amplify start-job --app-id ${{ secrets.AWS_AMPLIFY_ID }} --branch-name develop --job-type RELEASE
