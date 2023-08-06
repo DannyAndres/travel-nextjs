@@ -41,3 +41,4 @@ state.json
 # config files
 jest.config.js
 jest.setup.js
+next.config.js
