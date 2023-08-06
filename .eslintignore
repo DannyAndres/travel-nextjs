@@ -37,3 +37,7 @@ next-env.d.ts
 
 # serverless
 state.json
+
+# config files
+jest.config.js
+jest.setup.js

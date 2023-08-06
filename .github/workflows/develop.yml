@@ -1,0 +1,40 @@
+name: CI
+on:
+  pull_request:
+    branches: [develop]
+  workflow_dispatch:
+permissions:
+  checks: write
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "18.x"
+      - name: Install NPM dependencies
+        run: npm install
+      - name: Run Prettier
+        run: npm run format
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          eslint: true
+          prettier: true
+          eslint_args: "--config .eslintrc.json"
+          eslint_extensions: ts
+      - name: Running tests
+        run: npm run test
+      # - name: Configure AWS credentials
+      #   if: success() # This step will only run if all previous steps were successful
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_KEY }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET }}
+      #     aws-region: us-east-1
+      # - name: Start Amplify Deployment
+      #   if: success()
+      #   run: |
+      #     aws amplify start-job --app-id ${{ secrets.AWS_AMPLIFY_ID }} --branch-name develop --job-type RELEASE
