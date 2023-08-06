@@ -40,7 +40,3 @@ state.json
 
 # config files
 jest.config.js
-jest.setup.js
-next.config.js
-postcss.config.js
-tailwind.config.js
