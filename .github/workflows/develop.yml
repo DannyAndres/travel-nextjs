@@ -10,16 +10,21 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: "12.x"
       - name: Install NPM dependencies
         run: npm install
+      - name: Check Linter
+        run: npm run lint
+      - name: Running tests
+        run: npm run test
       - name: Configure AWS credentials
+        if: success() # This step will only run if all previous steps were successful
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET }}
           aws-region: us-east-1
       - name: Start Amplify Deployment
-        if: success() # This step will only run if all previous steps were successful
+        if: success()
         run: |
-          aws amplify start-job --app-id ${{ secrets.AWS_AMPLIFY_ID }} --branch-name main --job-type RELEASE
+          aws amplify start-job --app-id ${{ secrets.AWS_AMPLIFY_ID }} --branch-name develop --job-type RELEASE
