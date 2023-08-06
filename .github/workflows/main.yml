@@ -16,6 +16,8 @@ jobs:
           node-version: "18.x"
       - name: Install NPM dependencies
         run: npm install
+      - name: Run Prettier
+        run: npm run format
       - name: Run linters
         uses: wearerequired/lint-action@v2
         with:
