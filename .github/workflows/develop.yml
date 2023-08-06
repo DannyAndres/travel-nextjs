@@ -18,6 +18,7 @@ jobs:
         with:
           eslint: true
           prettier: true
+          eslint_args: "--config .eslintrc.json"
       - name: Running tests
         run: npm run test
       # - name: Configure AWS credentials
