@@ -46,3 +46,7 @@ render-html.js
 
 # amazon amplify
 /src/aws-exports.js
+/src/graphql/*
+/src/API.ts
+
+amplify-codegen-temp/models

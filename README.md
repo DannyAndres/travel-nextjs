@@ -21,3 +21,9 @@ You can start editing the page by modifying `src/pages/index.tsx`. The page auto
 The following image gets updated automatically on every push to this branch, which means the coverage is up to date.
 
 ![Coverage](screenshot.png)
+
+## Project's Architecture
+
+Here is a comprehensive diagram illustrating the diverse technologies utilized in this project, encompassing all components from frontend to backend, and their intricate interactions.
+
+![Coverage](architecture.png)
