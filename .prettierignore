@@ -44,4 +44,4 @@ jest.setup.js
 next.config.js
 postcss.config.js
 src/tsconfig.json
-wailwind.config.js
+tailwind.config.js
