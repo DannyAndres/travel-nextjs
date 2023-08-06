@@ -7,6 +7,7 @@ module.exports = {
     "!src/redux/hooks.ts",
     "!src/redux/providers.tsx",
     "!src/redux/store.ts",
+    "!src/aws-exports.js",
     "!**/*.d.ts",
     "!**/node_modules/**",
   ],

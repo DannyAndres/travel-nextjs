@@ -45,3 +45,9 @@ next.config.js
 postcss.config.js
 src/tsconfig.json
 tailwind.config.js
+render-html.js
+update-readme.js
+
+
+# amazon amplify
+/src/aws-exports.js

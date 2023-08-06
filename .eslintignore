@@ -42,3 +42,8 @@ state.json
 jest.config.js
 jest.setup.js
 next.config.js
+render-html.js
+update-readme.js
+
+# amazon amplify
+/src/aws-exports.js
