@@ -4,6 +4,9 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",
     "!src/pages/_app.tsx",
+    "!src/redux/hooks.ts",
+    "!src/redux/providers.tsx",
+    "!src/redux/store.ts",
     "!**/*.d.ts",
     "!**/node_modules/**",
   ],
