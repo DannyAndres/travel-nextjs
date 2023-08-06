@@ -16,4 +16,6 @@ You can start editing the page by modifying `src/pages/index.tsx`. The page auto
 
 ## Test Coverage
 
+The following image gets updated automatically on every push to this branch, which means the coverage is up to date.
+
 ![Coverage](screenshot.png)
