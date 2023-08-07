@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { useState } from "react";
+import { Auth } from "aws-amplify";
 
 interface IFormInput {
   email: string;
@@ -19,8 +20,27 @@ const Signup = (): React.ReactNode => {
   const password = watch("password");
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit: SubmitHandler<IFormInput> = (data): void => {
+  const signUpWithEmailAndPassword = async (
+    data: IFormInput
+  ): Promise<void> => {
     console.log(data);
+    const { password, email } = data;
+    try {
+      const { user } = await Auth.signUp({
+        username: email,
+        password,
+        // attributes: {
+        //   ElementInternals,
+        // },
+      });
+      console.log(user);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onSubmit: SubmitHandler<IFormInput> = async (data): Promise<void> => {
+    await signUpWithEmailAndPassword(data);
   };
 
   return (

@@ -1,5 +1,12 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
-import Signup from "@/pages/signup"; // adjust the import path as needed
+import Signup from "@/pages/signup";
+import { Auth } from "aws-amplify";
+
+jest.mock("aws-amplify", () => ({
+  Auth: {
+    signUp: jest.fn(async () => await Promise.resolve({ user: "testUser" })),
+  },
+}));
 
 describe("Signup", () => {
   it("renders correctly", () => {
@@ -124,5 +131,67 @@ describe("Signup", () => {
     // The error message should be shown
     const errorMessage = await findByText("The passwords do not match");
     expect(errorMessage).toBeInTheDocument();
+  });
+
+  it("handles form submission and calls signUpWithEmailAndPassword", async () => {
+    const { getByPlaceholderText, getByTestId } = render(<Signup />);
+    const emailInput = getByPlaceholderText("Email");
+    const passwordInput = getByPlaceholderText("Password");
+    const confirmPasswordInput = getByPlaceholderText("Confirm Password");
+    const submitButton = getByTestId("signup_submitButton");
+
+    fireEvent.change(emailInput, { target: { value: "test@test.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(confirmPasswordInput, {
+      target: { value: "password123" },
+    });
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(Auth.signUp).toHaveBeenCalled();
+    });
+  });
+
+  it("handles form submission and Auth.signUp fails", async () => {
+    // Mock Auth.signUp to throw an error
+    const signUpMock = jest.spyOn(Auth, "signUp");
+    signUpMock.mockImplementation(
+      async () => await Promise.reject(new Error("Sign up failed"))
+    );
+
+    // Mock console.log to check that the error is logged
+    const consoleLogMock = jest.spyOn(console, "log");
+    consoleLogMock.mockImplementation(() => {});
+
+    const { getByPlaceholderText, getByTestId } = render(<Signup />);
+    const emailInput = getByPlaceholderText("Email");
+    const passwordInput = getByPlaceholderText("Password");
+    const confirmPasswordInput = getByPlaceholderText("Confirm Password");
+    const submitButton = getByTestId("signup_submitButton");
+
+    fireEvent.change(emailInput, { target: { value: "test@test.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(confirmPasswordInput, {
+      target: { value: "password123" },
+    });
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(Auth.signUp).toHaveBeenCalledWith({
+        username: "test@test.com",
+        password: "password123",
+      });
+    });
+
+    // Check that the error was logged
+    // expect consoleLogMock due to having console after catch inside signUpWithEmailAndPassword
+    // this should be another type of handling and that should be tested
+    expect(consoleLogMock).toHaveBeenCalledWith(new Error("Sign up failed"));
+
+    // Clear the mocks after the test
+    signUpMock.mockRestore();
+    consoleLogMock.mockRestore();
   });
 });
