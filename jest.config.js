@@ -10,7 +10,7 @@ module.exports = {
     "!src/context/*",
     "!src/redux/store.ts",
     "!src/graphql/*",
-    "!src/aws-exports.js",
+    "!src/aws-exports.ts",
     "!**/*.d.ts",
     "!**/node_modules/**",
   ],

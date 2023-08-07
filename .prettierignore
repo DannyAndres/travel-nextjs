@@ -49,6 +49,9 @@ render-html.js
 
 
 # amazon amplify
-/src/aws-exports.js
+/src/aws-exports.ts
 /src/graphql/*
 /src/API.ts
+
+.vscode
+/amplify/*
