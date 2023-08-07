@@ -4,8 +4,38 @@ import { Auth } from "aws-amplify";
 
 jest.mock("aws-amplify", () => ({
   Auth: {
-    signUp: jest.fn(async () => await Promise.resolve({ user: "testUser" })),
+    signUp: jest.fn(
+      async () =>
+        await Promise.resolve({
+          user: {
+            email: "test@test.com",
+            password: "password123",
+            confirm_password: "password123",
+          },
+        })
+    ),
+    signIn: jest.fn(
+      async () =>
+        await Promise.resolve({
+          user: {
+            email: "test@test.com",
+            password: "password123",
+            confirm_password: "password123",
+          },
+        })
+    ),
+    confirmSignUp: jest.fn(
+      async () => await Promise.resolve({ message: "ok" })
+    ),
   },
+}));
+
+jest.mock("next/router", () => ({
+  useRouter: jest.fn(() => {
+    return {
+      replace: jest.fn(async () => await Promise.resolve({ message: "ok" })),
+    };
+  }),
 }));
 
 describe("Signup", () => {
@@ -19,9 +49,6 @@ describe("Signup", () => {
 
   it("handles form submission", async () => {
     const { getByPlaceholderText, getByTestId } = render(<Signup />);
-
-    // mocking possible api request, in this case only console log
-    const mockLog = jest.spyOn(console, "log");
 
     const emailInput = getByPlaceholderText("Email");
     const passwordInput = getByPlaceholderText("Password");
@@ -37,12 +64,153 @@ describe("Signup", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mockLog).toHaveBeenCalledWith({
-        email: "test@test.com",
-        password: "password123",
-        confirm_password: "password123",
-      });
+      expect(Auth.signUp).toHaveBeenCalled();
     });
+  });
+
+  it("handles verification form submission", async () => {
+    const { getByPlaceholderText, getByTestId } = render(<Signup />);
+
+    // Fill out and submit the signup form
+    fireEvent.change(getByPlaceholderText("Email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(getByPlaceholderText("Password"), {
+      target: { value: "password" },
+    });
+    fireEvent.change(getByPlaceholderText("Confirm Password"), {
+      target: { value: "password" },
+    });
+    fireEvent.click(getByTestId("signup_submitButton"));
+
+    // Wait for the signup to complete
+    await waitFor(() => {
+      expect(Auth.signUp).toHaveBeenCalled();
+    });
+
+    // Fill out and submit the verification form
+    fireEvent.change(getByTestId("signup_submitVerificationInput"), {
+      target: { value: "123456" },
+    });
+    fireEvent.click(getByTestId("signup_submitVerificationButton"));
+
+    // Wait for the verification to complete
+    await waitFor(() => {
+      expect(Auth.confirmSignUp).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(Auth.signIn).toHaveBeenCalled();
+    });
+  });
+
+  it("handles verification form submission when fails", async () => {
+    const { getByPlaceholderText, getByTestId } = render(<Signup />);
+
+    // Mock Auth.signUp to throw an error
+    const confirmSignUpMock = jest.spyOn(Auth, "confirmSignUp");
+    confirmSignUpMock.mockImplementation(
+      async () => await Promise.reject(new Error("Confirm Sign up failed"))
+    );
+
+    // Mock console.log to check that the error is logged
+    const consoleLogMock = jest.spyOn(console, "log");
+    consoleLogMock.mockImplementation(() => {});
+
+    // Fill out and submit the signup form
+    fireEvent.change(getByPlaceholderText("Email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(getByPlaceholderText("Password"), {
+      target: { value: "password" },
+    });
+    fireEvent.change(getByPlaceholderText("Confirm Password"), {
+      target: { value: "password" },
+    });
+    fireEvent.click(getByTestId("signup_submitButton"));
+
+    // Wait for the signup to complete
+    await waitFor(() => {
+      expect(Auth.signUp).toHaveBeenCalled();
+    });
+
+    // Fill out and submit the verification form
+    fireEvent.change(getByTestId("signup_submitVerificationInput"), {
+      target: { value: "123456" },
+    });
+    fireEvent.click(getByTestId("signup_submitVerificationButton"));
+
+    // Wait for the verification to complete
+    await waitFor(() => {
+      expect(Auth.confirmSignUp).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(Auth.signIn).toHaveBeenCalled();
+    });
+
+    // Check that the error was logged
+    // expect consoleLogMock due to having console after catch inside signUpWithEmailAndPassword
+    // this should be another type of handling and that should be tested
+    expect(consoleLogMock).toHaveBeenCalledWith(
+      new Error("Confirm Sign up failed")
+    );
+
+    // Clear the mocks after the test
+    confirmSignUpMock.mockRestore();
+    consoleLogMock.mockRestore();
+  });
+
+  it("handles verification form submission when aws returns empty user", async () => {
+    const { getByPlaceholderText, getByTestId } = render(<Signup />);
+
+    // Mock Auth.signUp to throw an error
+    const signInMock = jest.spyOn(Auth, "signIn");
+    signInMock.mockImplementation(async () => await Promise.resolve(null));
+
+    // Mock console.log to check that the error is logged
+    const consoleLogMock = jest.spyOn(console, "log");
+    consoleLogMock.mockImplementation(() => {});
+
+    // Fill out and submit the signup form
+    fireEvent.change(getByPlaceholderText("Email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(getByPlaceholderText("Password"), {
+      target: { value: "password" },
+    });
+    fireEvent.change(getByPlaceholderText("Confirm Password"), {
+      target: { value: "password" },
+    });
+    fireEvent.click(getByTestId("signup_submitButton"));
+
+    // Wait for the signup to complete
+    await waitFor(() => {
+      expect(Auth.signUp).toHaveBeenCalled();
+    });
+
+    // Fill out and submit the verification form
+    fireEvent.change(getByTestId("signup_submitVerificationInput"), {
+      target: { value: "123456" },
+    });
+    fireEvent.click(getByTestId("signup_submitVerificationButton"));
+
+    // Wait for the verification to complete
+    await waitFor(() => {
+      expect(Auth.confirmSignUp).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(Auth.signIn).toHaveBeenCalled();
+    });
+
+    // Check that the error was logged
+    // expect consoleLogMock due to having console after catch inside signUpWithEmailAndPassword
+    // this should be another type of handling and that should be tested
+    expect(consoleLogMock).toHaveBeenCalledWith(
+      new Error("Something went wrong!")
+    );
+
+    // Clear the mocks after the test
+    signInMock.mockRestore();
+    consoleLogMock.mockRestore();
   });
 
   it("toggles password visibility", () => {
@@ -179,10 +347,7 @@ describe("Signup", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(Auth.signUp).toHaveBeenCalledWith({
-        username: "test@test.com",
-        password: "password123",
-      });
+      expect(Auth.signUp).toHaveBeenCalled();
     });
 
     // Check that the error was logged

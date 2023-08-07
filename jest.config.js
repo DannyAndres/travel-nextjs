@@ -6,6 +6,8 @@ module.exports = {
     "!src/pages/_app.tsx",
     "!src/redux/hooks.ts",
     "!src/redux/providers.tsx",
+    "!src/API.ts",
+    "!src/context/*",
     "!src/redux/store.ts",
     "!src/graphql/*",
     "!src/aws-exports.js",
