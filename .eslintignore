@@ -42,3 +42,14 @@ state.json
 jest.config.js
 jest.setup.js
 next.config.js
+render-html.js
+
+# amazon amplify
+/src/aws-exports.ts
+/src/graphql/*
+/src/API.ts
+
+.vscode
+/amplify/*
+
+amplify-codegen-temp/models

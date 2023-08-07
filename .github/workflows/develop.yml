@@ -27,6 +27,8 @@ jobs:
           eslint_extensions: ts
       - name: Running tests
         run: npm run test
+      - name: Build project
+        run: npm run build
       # - name: Configure AWS credentials
       #   if: success() # This step will only run if all previous steps were successful
       #   uses: aws-actions/configure-aws-credentials@v1
